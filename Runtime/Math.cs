@@ -1,72 +1,63 @@
 
+using System;
+
 namespace Mixin
 {
+    /// <summary>
+    /// Mathematical functions and extensions for <see cref="double"/>, <see cref="float"/>, <see cref="long"/>, <see cref="int"/>.
+    /// </summary>
     public static class Math
     {
         /// <summary>
         /// Calculates the modulo.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="modulus"></param>
-        /// <returns></returns>
         public static double Modulo(this double value, double modulus) { return (value % modulus + modulus) % modulus; }
 
         /// <summary>
         /// Ensures the value to be at least a certain size.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
         /// <returns>Returns the greater value.</returns>
         public static double LowerBound(this double value, double min) { return System.Math.Max(min, value); }
 
         /// <summary>
         /// Ensures the value to be at most a certain size.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="max"></param>
         /// <returns>Returns the smaller value.</returns>
         public static double UpperBound(this double value, double max) { return System.Math.Min(max, value); }
 
         /// <summary>
         /// Ensures the value to be inside a certain range.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
         /// <returns>Returns the bounded value.</returns>
         public static double Between(this double value, double min, double max) { return value.LowerBound(min).UpperBound(max); }
 
         /// <summary>
         /// Rounds the number down.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public static long Floor(this double value) { return (long)System.Math.Floor(value); }
 
         /// <summary>
         /// Rounds the number up.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public static long Ceiling(this double value) { return (long)System.Math.Ceiling(value); }
 
         /// <summary>
-        /// Randomly returns either true or false.
+        /// Calculates a multiplier value from the amplifier.
         /// </summary>
-        /// <param name="random"></param>
-        /// <param name="probability">Probability to return true.</param>
-        /// <returns></returns>
-        public static bool RandomTrue(this double probability, System.Random random) { return random.NextDouble() < probability; }
+        public static double AmplifierToMultiplier(this double value)
+        {
+            return value >= 0 ? 1 + value : 1 / (1 - value);
+        }
 
         /// <summary>
-        /// Returns randomly either floor or ceil dependant on the value.
-        /// "3.8" has 80% chance of "4" and 20% chance of "3".
+        /// Calculates an amplifier value from the multiplier.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="random"></param>
-        /// <returns></returns>
-        public static long RoundRandom(this double value, System.Random random)
+        public static double MultiplierToAmplifier(this double value)
         {
-            return value.Floor() + (value.Modulo(1).RandomTrue(random) ? 1 : 0);
+            if (value <= 0)
+                throw new ArgumentException($"Parameter \"value\" was \"{value}\", but must be greater than 0.");
+
+            return value >= 1 ? value - 1 : 1 - (1 / value);
         }
 
         /// <inheritdoc cref="Modulo(double, double)" />
@@ -103,10 +94,10 @@ namespace Mixin
         /// <inheritdoc cref="Ceiling(double)" />
         public static long Ceiling(this float value) { return Ceiling((double)value); }
 
-        /// <inheritdoc cref="RandomTrue(double, System.Random)" />
-        public static bool RandomTrue(this float probability, System.Random random) { return RandomTrue((double)probability, random); }
+        /// <inheritdoc cref="AmplifierToMultiplier(double)" />
+        public static float AmplifierToMultiplier(this float value) { return (float)AmplifierToMultiplier((double)value); }
 
-        /// <inheritdoc cref="RandomTrue(double, System.Random)" />
-        public static long RoundRandom(this float value, System.Random random) { return RoundRandom((double)value, random); }
+        /// <inheritdoc cref="MultiplierToAmplifier(double)(double)" />
+        public static float MultiplierToAmplifier(this float value) { return (float)MultiplierToAmplifier((double)value); }
     }
 }
